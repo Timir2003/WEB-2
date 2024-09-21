@@ -199,8 +199,28 @@ def SQL():
 
 @app.route("/lab2/example")
 def example():
-    name = 'Остапенко Тимур'
-    course = 'Курс 3'
-    group = 'ФБИ-23'
-    return render_template ('example.html', name=name, course=course, group=group)    
+    name, course, group, num_lab = 'Остапенко Тимур', 'Курс 3', 'ФБИ-23', 2
+    fruits = [
+        {'name':'яблоки', 'price': 100},
+        {'name':'груши', 'price': 120},
+        {'name':'апельсины', 'price': 80},
+        {'name':'мандарины', 'price': 95}, 
+        {'name':'манго', 'price': 321},
+    ]
+
+    book = [
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+    ]
+
+    return render_template ('example.html', name=name, course=course, group=group, 
+                            num_lab=num_lab, fruits=fruits, book=book)    
     
