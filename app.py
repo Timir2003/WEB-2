@@ -13,6 +13,7 @@ def menu():
 <html>
     <head>
         <title>НГТУ, ФБ, Лабораторные работы</title>
+        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
     </head>
     <body>
         <header>
@@ -39,7 +40,7 @@ def lab1():
 <html>
     <head>
         <title>Остапенко Тимур Ростиславович, Лабораторная 1</title>
-        <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
     </head>
     <body>
         <header>
@@ -81,7 +82,7 @@ def oak():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
     </head>
     <body>
         <h1>Дуб</h1>
@@ -96,7 +97,7 @@ def student():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
     </head>
     <body>
         <h1>Остапенко Тимур Ростиславович</h1>
@@ -111,7 +112,7 @@ def python():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
     </head>
     <body>
         <h1>Преимущества: чем хорош Python</h1>
@@ -159,7 +160,7 @@ def SQL():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
     </head>
     <body>
         <h1>Для чего нужен SQL</h1>
@@ -202,4 +203,3 @@ def example():
     num_lab = 'Лабораторная работа 2'
     return render_template ('example.html', name=name, num_lab=num_lab)    
     
-
