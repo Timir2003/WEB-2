@@ -200,6 +200,7 @@ def SQL():
 @app.route("/lab2/example")
 def example():
     name = 'Остапенко Тимур'
-    num_lab = 'Лабораторная работа 2'
-    return render_template ('example.html', name=name, num_lab=num_lab)    
+    course = 'Курс 3'
+    group = 'ФБИ-23'
+    return render_template ('example.html', name=name, course=course, group=group)    
     
