@@ -209,16 +209,16 @@ def example():
     ]
 
     book = [
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
-        {'autor':'', 'name_book': '', 'style': '', 'num_pag': },
+        {'autor':'Александр Островский', 'name_book': 'Гроза', 'style': 'Драма', 'num_pag': 60},
+        {'autor':'Михаил Булгаков', 'name_book': 'Морфий', 'style': 'Повесть', 'num_pag': 31},
+        {'autor':'Александр Пушкин', 'name_book': 'Капитанская дочка', 'style': 'Роман', 'num_pag': 130},
+        {'autor':'Максим Горький', 'name_book':  'На дне', 'style': 'Драма', 'num_pag': 70},
+        {'autor':'Федор Достоквский', 'name_book': 'Братья Карамазовы', 'style': 'Классика', 'num_pag': 1140},
+        {'autor':'Федор Достоквский', 'name_book': 'Преступление и наказание', 'style': 'Социальная проза', 'num_pag': 680},
+        {'autor':'Алесандр Куприн', 'name_book': 'Гранатовый браслет', 'style': 'Повесть', 'num_pag': 60},
+        {'autor':'Александр Пушкин', 'name_book': 'Евгений Онегин', 'style': 'Классика', 'num_pag': 100},
+        {'autor':'Иван Тургенев', 'name_book': 'Отцы и дети ', 'style': 'Классика', 'num_pag': 240},
+        {'autor':'Алесандр Куприн', 'name_book': 'Олеся', 'style': 'Классика', 'num_pag': 90},
     ]
 
     return render_template ('example.html', name=name, course=course, group=group, 
