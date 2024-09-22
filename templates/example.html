@@ -32,10 +32,11 @@
         </ul>
 
         <ul>
-            {% for f in fruits %}
-            <li>{{ f.name }}: {{ f.price }} &#x20bd</li>
+            {% for f in book %}
+            <li>Автор произведения: {{ f.autor }} Название произведения: {{ f.name_book }} Жанр произведения: {{ f.style }} Количество страниц: {{ f.num_pag }} </li>
             {% endfor %}
-            </ul>
+        </ul>
+
     </main>
 
     <footer>
