@@ -3,9 +3,16 @@
 {% block lab %} Лабораторнаая работа 3{% endblock %}
 
 {% block main %}
-    <h1>Формы</h1>
-    <div>Тема Лабораторной - Формы. Список сделанных страниц:</div>
+    <h1>Формы, cookie</h1>
+    <div>Привет, <span style="color: {{name_color}}">{{name}}</span>!</div>
+    <div>Список сделанных страниц:</div>
     <ol>
+        <li>
+            <a href="/lab3/cookie">Куки</a>
+        </li>
+        <li>
+            <a href="/lab3/del_cookie">Очистить кук</a>
+        </li>
         <li>
             <a href="/lab3/form1">Форма</a>
         </li>
