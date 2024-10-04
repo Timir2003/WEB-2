@@ -38,3 +38,11 @@ footer {
 .error {
     color: red;
 }
+
+button {
+  color: white;
+  background-color: black;
+  padding: 5px 15px;
+  border-radius: 15px;
+  font-size: 10px;
+}
