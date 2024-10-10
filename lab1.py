@@ -27,6 +27,7 @@ def menu():
                 <li><a href="/lab1">Первая лабораторная</a></li>
                 <li><a href="/lab2">Вторая лабораторная</a></li>
                 <li><a href="/lab3">Третья лабораторная</a></li>
+                <li><a href="/test">Тест</a></li>
             </ul>
         </nav>
         <footer>
