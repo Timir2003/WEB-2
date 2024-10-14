@@ -24,7 +24,7 @@ def form1():
 
 @lab3.route('/lab3/order')
 def order():
-    return render_template('order.html')
+    return render_template('lab3/order.html')
 
 @lab3.route('/lab3/pay')
 def pay():
@@ -94,4 +94,3 @@ def settings():
     font_size = request.cookies.get('font-size')
     resp = make_response(render_template('lab3/settings.html', color=color, background_color=background_color, font_size=font_size))
     return resp
-

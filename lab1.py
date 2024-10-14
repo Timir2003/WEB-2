@@ -9,12 +9,12 @@ def start():
 
 @lab1.route("/menu")
 def menu():
-    return """
+    return '''
 <!doctype html>
 <html>
     <head>
         <title>НГТУ, ФБ, Лабораторные работы</title>
-        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='lab1/main.css') + '''">
     </head>
     <body>
         <header>
@@ -35,7 +35,7 @@ def menu():
         </footer>
     </body>
 </html>
-"""
+'''
 
 
 @lab1.route("/lab1")
@@ -45,7 +45,7 @@ def lab():
 <html>
     <head>
         <title>Остапенко Тимур Ростиславович, Лабораторная 1</title>
-        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='lab1/main.css') + '''">
     </head>
     <body>
         <header>
@@ -88,11 +88,11 @@ def oak():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='lab1/main.css') + '''">
     </head>
     <body>
         <h1>Дуб</h1>
-        <img src="'''+url_for('static', filename='oak.jpg')+'''">
+        <img src="'''+url_for('static', filename='lab1/oak.jpg')+'''">
     </body>
 </html>
 '''
@@ -104,11 +104,11 @@ def student():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='lab1/main.css') + '''">
     </head>
     <body>
         <h1>Остапенко Тимур Ростиславович</h1>
-        <img src="'''+url_for('static', filename='NETI.jpg')+'''">
+        <img src="'''+url_for('static', filename='lab1/NETI.jpg')+'''">
     </body>
 </html>
 '''
@@ -120,11 +120,11 @@ def python():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='lab1/main.css') + '''">
     </head>
     <body>
         <h1>Преимущества: чем хорош Python</h1>
-        <img src="'''+url_for('static', filename='python.jpg')+'''">
+        <img src="'''+url_for('static', filename='lab1/python.jpg')+'''">
         <p>
         Специалисты выделяют массу преимуществ Python — остановимся на ключевых из них.
         <b>Простота синтаксиса, а значит — низкий порог вхождения.</b> 
@@ -169,11 +169,11 @@ def SQL():
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="''' + url_for('static', filename='main.css') + '''">
+        <link rel="stylesheet" href="''' + url_for('static', filename='lab1/main.css') + '''">
     </head>
     <body>
         <h1>Для чего нужен SQL</h1>
-        <img src="'''+url_for('static', filename='SQL.jpg')+'''">
+        <img src="'''+url_for('static', filename='lab1/SQL.jpg')+'''">
         <p>
             SQL (сокращение от англ. Structured Query Language) — это язык запросов, который применяют, 
             чтобы работать с базами данных, структурированных особым образом. Главные задачи SQL — составлять

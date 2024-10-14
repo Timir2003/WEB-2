@@ -26,16 +26,16 @@ def example():
         {'autor':'Алесандр Куприн', 'name_book': 'Олеся', 'style': 'Классика', 'num_pag': 90},
     ]
 
-    return render_template ('example.html', name=name, course=course, group=group, 
+    return render_template ('lab2/example.html', name=name, course=course, group=group, 
                             num_lab=num_lab, fruits=fruits, book=book)
 
 
 
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/dessert')
 def dessert():
-    return render_template('dessert.html')
+    return render_template('lab2/dessert.html')
