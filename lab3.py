@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, make_response, redirect
+from flask import Blueprint, render_template, request, make_response, redirect, url_for
 lab3 = Blueprint('lab3', __name__)
 
 @lab3.route('/lab3/')
@@ -97,3 +97,39 @@ def settings():
     font_size = request.cookies.get('font-size')
     resp = make_response(render_template('lab3/settings.html', color=color, background_color=background_color, font_size=font_size))
     return resp
+
+
+products = [
+        {"name": "Смартфон A", "price": 500, "brand": "Brand A", "color": "Черный"},
+        {"name": "Смартфон B", "price": 700, "brand": "Brand B", "color": "Синий"},
+        {"name": "Смартфон C", "price": 300, "brand": "Brand C", "color": "Белый"},
+        {"name": "Смартфон D", "price": 900, "brand": "Brand A", "color": "Красный"},
+        {"name": "Смартфон E", "price": 400, "brand": "Brand B", "color": "Серый"},
+        {"name": "Смартфон F", "price": 600, "brand": "Brand C", "color": "Золотой"},
+        {"name": "Смартфон G", "price": 800, "brand": "Brand A", "color": "Зеленый"},
+        {"name": "Смартфон H", "price": 200, "brand": "Brand B", "color": "Фиолетовый"},
+        {"name": "Смартфон I", "price": 1000, "brand": "Brand C", "color": "Розовый"},
+        {"name": "Смартфон J", "price": 550, "brand": "Brand A", "color": "Оранжевый"},
+        {"name": "Смартфон K", "price": 750, "brand": "Brand B", "color": "Коричневый"},
+        {"name": "Смартфон L", "price": 350, "brand": "Brand C", "color": "Бирюзовый"},
+        {"name": "Смартфон M", "price": 950, "brand": "Brand A", "color": "Желтый"},
+        {"name": "Смартфон N", "price": 450, "brand": "Brand B", "color": "Серебряный"},
+        {"name": "Смартфон O", "price": 650, "brand": "Brand C", "color": "Бронзовый"},
+        {"name": "Смартфон P", "price": 850, "brand": "Brand A", "color": "Черный"},
+        {"name": "Смартфон Q", "price": 250, "brand": "Brand B", "color": "Синий"},
+        {"name": "Смартфон R", "price": 1050, "brand": "Brand C", "color": "Белый"},
+        {"name": "Смартфон S", "price": 550, "brand": "Brand A", "color": "Красный"},
+        {"name": "Смартфон T", "price": 750, "brand": "Brand B", "color": "Серый"},
+    ]
+
+@lab3.route('/lab3/search.html')
+def search_products():
+    min_price = int(request.args.get('min_price', 0))
+    max_price = int(request.args.get('max_price', 1000))
+    filtered_products = [product for product in products
+                        if min_price <= product['price'] <= max_price]
+    return render_template('lab3/search.html', products=filtered_products, min_price=min_price, max_price=max_price)
+
+@lab3.route('/lab3/index')
+def index():
+    return render_template('lab3/index.html', products=products)

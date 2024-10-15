@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block lab %} Лабораторнаая работа 3{% endblock %}
+
+{% block main %}
+    <h1>Поиск товаров</h1>
+    <form id="search-form">
+        <label for="min-price">Минимальная цена:</label>
+        <input type="number" id="min-price" name="min-price">
+        <label for="max-price">Максимальная цена:</label>
+        <input type="number" id="max-price" name="max-price">
+        <button type="button" onclick="searchProducts()">Искать</button>
+    </form>
+    <div id="results"></div>
+    <script>
+        function searchProducts() {
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+            const url = `search.html?min_price=${minPrice}&max_price=${maxPrice}`;
+            window.location.href = url;
+        }
+    </script>
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Бренд</th>
+                <th>Цвет</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.brand }}</td>
+                <td>{{ product.color }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
