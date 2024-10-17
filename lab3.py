@@ -85,6 +85,14 @@ def settings():
     resp = make_response(render_template('lab3/settings.html', color=color, background_color=background_color, font_size=font_size))
     return resp
 
+@lab3.route('/lab3/del_settings')
+def del_settings():
+    resp = make_response(redirect('/lab3/settings'))
+    cookies = request.cookies.keys()
+    for cookie in cookies:
+        resp.set_cookie(cookie, '', expires=0)
+    return resp
+
 products = [
         {"name": "Смартфон A", "price": 500, "brand": "Brand A", "color": "Черный"},
         {"name": "Смартфон B", "price": 700, "brand": "Brand B", "color": "Синий"},
@@ -110,6 +118,7 @@ products = [
 
 @lab3.route('/lab3/search.html')
 def search_products():
+    
     min_price = int(request.args.get('min_price', 0))
     max_price = int(request.args.get('max_price', 1000))
     filtered_products = [product for product in products

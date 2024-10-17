@@ -4,7 +4,7 @@
 
 {% block main %}
 
-    <h1>Пасажир</h1>
+    <h1>Заполнение данных пасажира</h1>
 
     <form action="ticket">
         <label>ФИО пасажира:</label>
@@ -23,22 +23,25 @@
         <div>
             <select name="place">
                 <option value="up">Верхняя</option>
-                <option value="low">Нижняя</option>
-                <option value="side_low">Боковая нижняя</option>
+                <option value="low">Нижняя (+100 рублей)</option>
+                <option value="side_low">Боковая нижняя (+100 рублей)</option>
                 <option value="side_up">Боковая верхняя</option>
             </select>
             <span class="error">{{ errors.place }}</span>
         </div>
 
         <label>Дополнительные услуги:</label>
+        <br>
         <label>
-            <input type="checkbox" name="underwear" checked>Постельное бельё
+            <input type="checkbox" name="underwear" checked>Постельное бельё (+75 рублей)
         </label>
+        <br>
         <label>
-            <input type="checkbox" name="luggage" checked>Багаж
+            <input type="checkbox" name="luggage" checked>Багаж (+250 рублей)
         </label>
+        <br>
         <label>
-            <input type="checkbox" name="insurance" checked>Страховка
+            <input type="checkbox" name="insurance" checked>Страховка (+150 рублей)
         </label>
 
         <br>
