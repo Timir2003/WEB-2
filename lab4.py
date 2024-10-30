@@ -191,29 +191,29 @@ def order_grain():
         weight = request.form.get('weight')
 
         if not weight:
-            return "Ошибка! Не указан вес заказа."
+            return render_template('/lab4/order_grain.html', error="Ошибка! Не указан вес заказа.", grain_types=prices.keys())
         try:
             weight = float(weight)
         except ValueError:
-            return "Ошибка! Некорректный формат веса."
+            return render_template('/lab4/order_grain.html', error="Ошибка! Некорректный формат веса.", grain_types=prices.keys())
 
         if weight <= 0:
-            return "Ошибка! Вес заказа должен быть больше 0."
+            return render_template('/lab4/order_grain.html', error="Ошибка! Вес заказа должен быть больше 0.", grain_types=prices.keys())
 
         price_per_ton = prices.get(grain_type, 0)
         total_cost = price_per_ton * weight
 
+        # Скидка за большой объём
         discount = 0
         if weight > 50:
             discount = total_cost * 0.1
             total_cost -= discount
 
+        # Ограничение по объёму
         if weight > 500:
-            return "К сожалению, такого объёма зерна сейчас нет в наличии."
+            return render_template('/lab4/order_grain.html', error="К сожалению, такого объёма зерна сейчас нет в наличии.", grain_types=prices.keys())
 
-        message = f"Заказ успешно сформирован. Вы заказали {grain_type}.<br>Вес: {weight:.2f} т. Сумма к оплате: {total_cost:.2f} руб."
-        if discount:
-            message += f"<br>Скидка за большой объём: {discount:.2f} руб."
-        return message
-        
+        # Вывод сообщения с учетом скидки
+        return render_template('/lab4/order_grain.html', grain_type=grain_type, weight=weight, total_cost=total_cost, discount=discount, grain_types=prices.keys())
+ 
     return render_template('/lab4/order_grain.html', grain_types=prices.keys())
