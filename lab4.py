@@ -203,17 +203,14 @@ def order_grain():
         price_per_ton = prices.get(grain_type, 0)
         total_cost = price_per_ton * weight
 
-        # Скидка за большой объём
         discount = 0
         if weight > 50:
             discount = total_cost * 0.1
             total_cost -= discount
 
-        # Ограничение по объёму
         if weight > 500:
             return render_template('/lab4/order_grain.html', error="К сожалению, такого объёма зерна сейчас нет в наличии.", grain_types=prices.keys())
 
-        # Вывод сообщения с учетом скидки
         return render_template('/lab4/order_grain.html', grain_type=grain_type, weight=weight, total_cost=total_cost, discount=discount, grain_types=prices.keys())
  
     return render_template('/lab4/order_grain.html', grain_types=prices.keys())
