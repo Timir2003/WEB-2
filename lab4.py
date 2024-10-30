@@ -215,5 +215,5 @@ def order_grain():
         if discount:
             message += f"<br>Скидка за большой объём: {discount:.2f} руб."
         return message
-    
+        
     return render_template('/lab4/order_grain.html', grain_types=prices.keys())
