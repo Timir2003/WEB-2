@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block lab %} Лабораторнаая работа 4 {% endblock %}
+{% block main %}
+    <h1>Редактирование данных пользователя</h1>
+    <form method="post">
+        <input type="text" name="name" placeholder="Имя" value="{{ user.name }}" required>
+        <input type="password" name="password" placeholder="Новый пароль" required>
+        <button type="submit">Сохранить изменения</button>
+    </form>
+    <p><a href="/lab4/users_list">Назад к списку пользователей</a></p>
+{% endblock %}
