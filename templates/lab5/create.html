@@ -3,13 +3,17 @@
 {% block main %}
     <h1>Создание статьи</h1>
 
+    {% if error %}
+        <div style="color: red;">{{ error }}</div>
+    {% endif %}
+
     <form method="post">
         <div>
             <label>Название статьи: <input type="text" maxlength="50" name="title"></label>
         </div>
 
         <div>
-        <textarea name="article_text"></textarea>
+            <textarea name="article_text"></textarea>
         </div>
         
         <div>
