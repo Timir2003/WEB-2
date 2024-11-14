@@ -52,6 +52,7 @@
     {% if login %}
       <p>{{ login }}!</p>
       <a href="/lab5/logout"><button>Выйти</button></a>
+      <a href="/lab5/users"><button>Список зарегистрированных пользователей</button></a>
     {% else %}
       <p>Анонимный пользователь</p>
       <a href="/lab5/login"><button>Войти</button></a>
@@ -60,6 +61,7 @@
     
     <a href="/lab5/list"><button>Список статей</button></a>
     <a href="/lab5/create"><button>Создать статью</button></a>
+    <a href="/lab5/public_articles"><button>Посмотреть публичные статьи</button></a>
     </div>
   </div>
 {% endblock %}
