@@ -115,7 +115,7 @@ def create_article():
         cur.execute("INSERT INTO articles(user_id, title, article_text, is_favorite, is_public) VALUES (%s, %s, %s, %s, %s);", 
                     (login_id, title, article_text, is_favorite, is_public))
     else:
-        cur.execute("INSERT INTO articles(user_id, title, article_text, is_favorite, is_public) VALUES (?, ?, ?, ?, ?);", 
+        cur.execute("INSERT INTO articles(login_id, title, article_text, is_favorite, is_public) VALUES (?, ?, ?, ?, ?);", 
                     (login_id, title, article_text, is_favorite, is_public))
     
     
