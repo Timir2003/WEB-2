@@ -1,0 +1,102 @@
+    {% extends "base.html" %}
+    {% block lab %}Расчетно-графическое задание{% endblock %}
+    {% block main %}
+    <style>
+        body {
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #444;
+        }
+        .edit-container {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .cancel-button {
+            background-color: #dc3545;
+        }
+        .cancel-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+
+    <h1>Редактирование книги: {{ book.title }}</h1>
+    <form method="POST" action="{{ url_for('RGZ.edit_book', book_id=book['id']) }}">
+        <label for="title">Название:</label>
+        <input type="text" name="title" id="title" value="{{ book['title'] }}" required>
+    
+        <label for="author">Автор:</label>
+        <input type="text" name="author" id="author" value="{{ book['author'] }}" required>
+    
+        <label for="page_count">Количество страниц:</label>
+        <input type="number" name="page_count" id="page_count" value="{{ book['pages'] }}" required>
+    
+        <label for="publisher">Издатель:</label>
+        <input type="text" name="publisher" id="publisher" value="{{ book['publisher'] }}" required>
+    
+        <label for="genre">Жанр:</label>
+        <input type="text" name="genre" id="genre" value="{{ book['genre'] }}" required>
+
+        <label for="genre">Обложка:</label>
+        <input type="text" name="cover_image" value="{{ book.cover_image }}" required>
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <a href="{{ url_for('RGZ.manage_books') }}"><button>Назад к списку книг</button></a>
+
+
+
+
+        <script>
+            $(document).ready(function() {
+                const bookId = /* Получите ID книги из URL или другого источника */
+                
+                $.ajax({
+                    url: `/api/books/${bookId}`,
+                    method: 'GET',
+                    success: function(book) {
+                        $('input[name="title"]').val(book.title);
+                        $('input[name="author"]').val(book.author);
+                        $('input[name="genre"]').val(book.genre);
+                        $('input[name="page_count"]').val(book.page_count);
+                        $('input[name="publisher"]').val(book.publisher);
+                        $('input[name="cover_image"]').val(book.cover_image);
+                    },
+                    error: function() {
+                        alert('Ошибка загрузки данных книги.');
+                    }
+                });
+            });
+        </script>
+    {% endblock %}

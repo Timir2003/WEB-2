@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block lab %}Расчетно-графическое задание{% endblock %}
+{% block main %}
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+        }
+        .admin-container {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <h1>Управление книгами</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <form id="filterForm">
+        <select id="author">
+            <option value="">Выберите автора</option>
+            {% for author in authors %}
+                <option value="{{ author }}">{{ author }}</option>
+            {% endfor %}
+        </select>
+        
+        <select id="genre">
+            <option value="">Выберите жанр</option>
+            {% for genre in genres %}
+                <option value="{{ genre }}">{{ genre }}</option>
+            {% endfor %}
+        </select>
+        
+        <input type="number" id="pages_from" placeholder="Страниц от">
+        <input type="number" id="pages_to" placeholder="Страниц до">
+        <button type="submit">Фильтровать</button>
+        <button type="button" id="resetFiltersButton">Сбросить фильтры</button> <!-- Кнопка для сброса фильтров -->
+    </form>
+    
+    <a href="{{ url_for('RGZ.logoute') }}"><button>Выйти</button></a>
+
+    <!-- Кнопка для добавления книги -->
+    <button id="addBookButton">Добавить книгу</button>
+    
+    <!-- Модальное окно для добавления книги -->
+    <div id="addBookModal" style="display: none;">
+        <h2>Добавить книгу</h2>
+        <form id="addBookForm">
+            <input type="text" id="newTitle" placeholder="Название книги" required>
+            <input type="text" id="newAuthor" placeholder="Автор" required>
+            <input type="text" id="newGenre" placeholder="Жанр" required>
+            <input type="number" id="newPages" placeholder="Количество страниц" required>
+            <input type="text" id="newPublisher" placeholder="Издатель" required>
+            <input type="text" id="newCoverImage" placeholder="URL обложки" required>
+            <button type="submit">Сохранить</button>
+            <button type="button" id="closeModalButton">Закрыть</button>
+        </form>
+    </div>
+    
+    <!-- Таблица книг -->
+    <table id="booksTable">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Жанр</th>
+                <th>Количество страниц</th>
+                <th>Издатель</th>
+                <th>Обложка</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody id="booksTableBody">
+            <!-- Данные будут загружены через AJAX -->
+        </tbody>
+    </table>    
+
+    <script>
+        function loadBooks() {
+            const author = document.getElementById('author').value;
+            const genre = document.getElementById('genre').value;
+            const pagesFrom = document.getElementById('pages_from').value;
+            const pagesTo = document.getElementById('pages_to').value;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `/api/admin/books?author=${author}&genre=${genre}&pages_from=${pagesFrom}&pages_to=${pagesTo}`, true);
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    const data = JSON.parse(xhr.responseText);
+                    const booksTableBody = document.getElementById('booksTableBody');
+                    if (booksTableBody) {
+                        booksTableBody.innerHTML = '';
+
+                        data.books.forEach(function(book) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${book.title}</td>
+                                <td>${book.author}</td>
+                                <td>${book.genre}</td>
+                                <td>${book.pages}</td>
+                                <td>${book.publisher}</td>
+                                <td><img src="${book.cover_image}" alt="Обложка" width="50"></td>
+                                <td>
+                                    <a href="/RGZ/edit_book/${book.id}"><button>Редактировать</button></a>
+                                    <button class="deleteBookButton" data-id="${book.id}">Удалить</button>
+                                </td>
+                            `;
+                            booksTableBody.appendChild(row);
+                        });
+                    } else {
+                        console.error('Element with id "booksTableBody" not found.');
+                    }
+                } else {
+                    console.error('Error loading books:', xhr.statusText);
+                }
+            };
+            xhr.send();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBooks(); // Вызов функции загрузки книг
+
+            // Обработчик для фильтрации
+            document.getElementById('filterForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loadBooks(); // Загружаем книги с применением фильтров
+            });
+
+            // Обработчик для сброса фильтров
+            document.getElementById('resetFiltersButton').addEventListener('click', function() {
+                document.getElementById('author').value = ''; // Сбрасываем выбор автора
+                document.getElementById('genre').value = ''; // Сбрасываем выбор жанра
+                document.getElementById('pages_from').value = ''; // Сбрасываем количество страниц от
+                document.getElementById('pages_to').value = ''; // Сбрасываем количество страниц до
+                loadBooks(); // Загружаем книги без фильтров
+            });
+
+            // Обработчик для удаления книги
+            document.getElementById('booksTableBody').addEventListener('click', function(e) {
+                if (e.target.classList.contains('deleteBookButton')) {
+                    const bookId = e.target.getAttribute('data-id');
+                    if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('DELETE', `/api/books/${bookId}`, true); // Убедитесь, что путь правильный
+                        xhr.onload = function() {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                loadBooks(); // Перезагружаем книги после удаления
+                            } else {
+                                console.error('Error deleting book:', xhr.statusText);
+                            }
+                        };
+                        xhr.send();
+                    }
+                }
+            });
+
+            // Обработчик для открытия модального окна
+            document.getElementById('addBookButton').addEventListener('click', function() {
+                document.getElementById('addBookModal').style.display = 'block'; // Показываем модальное окно
+            });
+
+            // Обработчик для закрытия модального окна
+            document.getElementById('closeModalButton').addEventListener('click', function() {
+                document.getElementById('addBookModal').style.display = 'none'; // Скрываем модальное окно
+            });
+
+            // Обработчик для добавления книги
+            document.getElementById('addBookForm').addEventListener('submit', function(e) {
+                e.preventDefault(); // Предотвращаем стандартное поведение формы
+
+                const newBook = {
+                    title: document.getElementById('newTitle').value,
+                    author: document.getElementById('newAuthor').value,
+                    genre: document.getElementById('newGenre').value,
+                    pages: parseInt(document.getElementById('newPages').value),
+                    publisher: document.getElementById('newPublisher').value,
+                    cover_image: document.getElementById('newCoverImage').value
+                };
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/admin/books', true); // Измените путь на /api/admin/books
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        loadBooks(); // Перезагружаем книги после добавления
+                        document.getElementById('addBookModal').style.display = 'none'; // Закрываем модальное окно
+                        document.getElementById('addBookForm').reset(); // Сбрасываем форму
+                    } else {
+                        console.error('Error adding book:', xhr.statusText);
+                    }
+                };
+                xhr.send(JSON.stringify(newBook));
+            });
+        });
+    </script>
+{% endblock %}

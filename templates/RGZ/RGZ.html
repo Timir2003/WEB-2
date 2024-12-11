@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block lab %}Расчетно-графическое задание{% endblock %}
+
+{% block main %}
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #pagination {
+            display: block;
+            padding: 10px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        #pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #00070d;
+        }
+        #pagination a:hover {
+            text-decoration: underline;
+        }
+        /* Стили для кнопок */
+        button {
+            background-color: #007bff; /* Цвет фона */
+            color: white; /* Цвет текста */
+            border: none; /* Убираем рамку */
+            padding: 10px 15px; /* Отступы */
+            border-radius: 5px; /* Закругленные углы */
+            cursor: pointer; /* Курсор при наведении */
+            font-size: 14px; /* Размер шрифта */
+            margin: 5px; /* Отступ между кнопками */
+        }
+        button:hover {
+            background-color: #0056b3; /* Цвет фона при наведении */
+        }
+        a {
+            text-decoration: none; /* Убираем подчеркивание */
+        }
+    </style>
+    <h2>Фильтр книг</h2>
+    <form id="filterForm">
+        <label for="author">Автор:</label>
+        <select name="author" id="author">
+            <option value="">Все авторы</option>
+            {% for author in authors %}
+                <option value="{{ author }}" {% if author == request.args.get('author') %}selected{% endif %}>{{ author }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="genre">Жанр:</label>
+        <select name="genre" id="genre">
+            <option value="">Все жанры</option>
+            {% for genre in genres %}
+                <option value="{{ genre }}" {% if genre == request.args.get('genre') %}selected{% endif %}>{{ genre }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="pages_from">Количество страниц от:</label>
+        <input type="number" name="pages_from" id="pages_from" value="{{ request.args.get('pages_from', '') }}"  placeholder="Страниц от"/>
+
+        <label for="pages_to">Количество страниц до:</label>
+        <input type="number" name="pages_to" id="pages_to" value="{{ request.args.get('pages_to', '') }}"  placeholder="Страниц до"/>
+
+        <button type="submit">Применить фильтры</button>
+        <a href="{{ url_for('RGZ.lab') }}"><button type="button">Сбросить фильтры</button></a>
+    </form>
+    {% if 'login' not in session %}
+        <a href="{{ url_for('RGZ.log') }}"><button>Вход</button></a>
+    {% else %}
+        <a href="{{ url_for('RGZ.logoute') }}"><button>Выйти</button></a>
+    {% endif %}
+
+    <h2>Список книг</h2>
+    <table id="booksTable">
+        <thead>
+            <tr>
+                <th>Обложка</th>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Количество страниц</th>
+                <th>Издатель</th>
+                <th>Жанр</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Данные будут загружены через AJAX -->
+        </tbody>
+    </tbody>
+</table>
+
+<!-- Пагинация -->
+<div id="pagination">
+    <!-- Пагинация будет загружена через AJAX -->
+</div>
+
+<script>
+    function loadBooks(page = 1) {
+        const author = document.getElementById('author').value;
+        const genre = document.getElementById('genre').value;
+        const pagesFrom = document.getElementById('pages_from').value;
+        const pagesTo = document.getElementById('pages_to').value;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/api/books?page=${page}&author=${author}&genre=${genre}&pages_from=${pagesFrom}&pages_to=${pagesTo}`, true);
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const data = JSON.parse(xhr.responseText);
+                const booksTableBody = document.querySelector('#booksTable tbody');
+                booksTableBody.innerHTML = ''; // Очистка таблицы
+
+                data.books.forEach(function(book) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><img src="${book.cover_image}" alt="Обложка книги" width="100"/></td>
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>${book.pages}</td>
+                        <td>${book.publisher}</td>
+                        <td>${book.genre}</td>
+                    `;
+                    booksTableBody.appendChild(row);
+                });
+
+                // Обновление пагинации
+                const paginationDiv = document.getElementById('pagination');
+                paginationDiv.innerHTML = ''; // Очистка текущей пагинации
+
+                for (let i = 1; i <= data.total_pages; i++) {
+                    const pageLink = document.createElement('a');
+                    pageLink.href = '#';
+                    pageLink.innerText = i;
+                    pageLink.onclick = function() {
+                        loadBooks(i); // Загружаем книги для выбранной страницы
+                    };
+                    paginationDiv.appendChild(pageLink);
+                    paginationDiv.appendChild(document.createTextNode(' ')); // Добавляем пробел между ссылками
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBooks();
+
+        document.getElementById('filterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadBooks();
+        });
+    });
+</script>
+{% endblock %}

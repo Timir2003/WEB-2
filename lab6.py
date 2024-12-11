@@ -217,5 +217,5 @@ def login():
 @lab6.route('/lab6/logout')
 def logout():
     session.pop('login', None)
-    return redirect('/lab5/login')
+    return redirect('/lab6/login')
     

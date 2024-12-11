@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block lab %}Расчетно-графическое задание{% endblock %}
+{% block main %}
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            margin: 30px auto;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+    <h1>Регистрация</h1>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    
+    <form id="registerForm">
+        <div>
+            <label>Логин: <input type="text" name="login" required></label>
+        </div>
+        <div>
+            <label>Пароль: <input type="password" name="password" required></label>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault(); // Отменяем стандартное поведение формы
+
+                const formData = new FormData(this); // Получаем данные формы
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value; // Преобразуем FormData в обычный объект
+                });
+
+                console.log(JSON.stringify(data)); // Вывод данных в консоль перед отправкой
+
+                // Создаем объект для AJAX-запроса
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/register', true);
+                xhr.setRequestHeader('Content-Type', 'application/json'); // Устанавливаем заголовок Content-Type
+                xhr.onload = function() {
+                    if (xhr.status === 201) {
+                        alert('Регистрация успешна!');
+                        window.location.href = '/RGZ/login'; // Перенаправление на страницу входа
+                    } else {
+                        const errorResponse = JSON.parse(xhr.responseText);
+                        alert(errorResponse.error || 'Ошибка регистрации.');
+                    }
+                };
+                xhr.onerror = function() {
+                    alert('Ошибка сети.');
+                };
+                xhr.send(JSON.stringify(data)); // Отправляем данные в формате JSON
+            });
+        });
+    </script>
+{% endblock %}
