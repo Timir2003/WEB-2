@@ -298,6 +298,8 @@ def get_admin_books():
     except Exception as e:
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {str(e)}"}), 500
+    
+    
 
     db_close(conn, cur)
 

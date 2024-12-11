@@ -131,6 +131,7 @@
         xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 300) {
                 const data = JSON.parse(xhr.responseText);
+                console.log(data); // Добавьте это для отладки
                 const booksTableBody = document.querySelector('#booksTable tbody');
                 booksTableBody.innerHTML = ''; // Очистка таблицы
 
