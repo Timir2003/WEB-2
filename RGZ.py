@@ -90,20 +90,15 @@ def get_books():
     if 'login' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Получение параметров сортировки и поиска
     author = request.args.get('author', '')
     genre = request.args.get('genre', '')
     pages_from = request.args.get('pages_from', '')
     pages_to = request.args.get('pages_to', '')
-    page = int(request.args.get('page', 1))
-    per_page = 20
-    offset = (page - 1) * per_page
 
     conn, cur = db_connect()
     if conn is None or cur is None:
         return jsonify({"error": "Database connection error"}), 500
 
-    # Подготовка условий для SQL-запроса
     conditions = []
     params = []
 
@@ -115,74 +110,32 @@ def get_books():
         conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
         params.append(genre)
 
-    if pages_from.isdigit():  # Проверка, что pages_from является числом
+    if pages_from:
         conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
         params.append(int(pages_from))
 
-    if pages_to.isdigit():  # Проверка, что pages_to является числом
+    if pages_to:
         conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
         params.append(int(pages_to))
 
-    query = "SELECT cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE TRUE"
-   
+    query = "SELECT id, cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE TRUE"
+    
     if conditions:
         query += " AND " + " AND ".join(conditions)
-
-    query += " ORDER BY title LIMIT %s OFFSET %s;"
-    params.append(per_page)
-    params.append(offset)
 
     try:
         cur.execute(query, params)
         books = cur.fetchall()
+        
+        # Преобразование результата в список словарей
+        books_list = [dict(book) for book in books]
     except Exception as e:
         db_close(conn, cur)
-        return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
-
-    # Получение общего количества книг для пагинации
-    total_query = "SELECT COUNT(*) FROM books WHERE TRUE"
-    total_conditions = []
-    total_params = []
-
-    if author:
-        total_conditions.append("author = %s" if current_app.config['DB_TYPE'] == 'postgres' else "author = ?")
-        total_params.append(author)
-
-    if genre:
-        total_conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
-        total_params.append(genre)
-
-    if pages_from.isdigit():  # Проверка, что pages_from является числом
-        total_conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
-        total_params.append(int(pages_from))
-
-    if pages_to.isdigit():  # Проверка, что pages_to является числом
-        total_conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
-        total_params.append(int(pages_to))
-
-    if total_conditions:
-        total_query += " AND " + " AND ".join(total_conditions)
-
-    try:
-        cur.execute(total_query, total_params)
-        total_books = cur.fetchone()['count']
-    except Exception as e:
-        db_close(conn, cur)
-        return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
-
-    total_pages = (total_books + per_page - 1) // per_page
+        return jsonify({"error": f"Ошибка выполнения запроса: {str(e)}"}), 500
 
     db_close(conn, cur)
 
-    return jsonify({
-        "books": books,
-        "page": page,
-        "total_pages": total_pages,
-        "pagination": {
-            "current_page": page,
-            "total_pages": total_pages
-        }
-    })
+    return jsonify({"books": books_list})
 
 @RGZ.route('/api/register', methods=['POST'])
 def register():
