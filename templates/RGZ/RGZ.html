@@ -147,20 +147,24 @@
                     booksTableBody.appendChild(row);
                 });
 
-                // Обновление пагинации
-                const paginationDiv = document.getElementById('pagination');
-                paginationDiv.innerHTML = ''; // Очистка текущей пагинации
+                // Update pagination controls
+                const pagination = document.getElementById('pagination');
+                pagination.innerHTML = ''; // Clear existing pagination
 
                 for (let i = 1; i <= data.total_pages; i++) {
                     const pageLink = document.createElement('a');
                     pageLink.href = '#';
                     pageLink.innerText = i;
                     pageLink.onclick = function() {
-                        loadBooks(i); // Загружаем книги для выбранной страницы
+                        loadBooks(i); // Load books for the selected page
                     };
-                    paginationDiv.appendChild(pageLink);
-                    paginationDiv.appendChild(document.createTextNode(' ')); // Добавляем пробел между ссылками
+                    pagination.appendChild(pageLink);
+                    if (i < data.total_pages) {
+                        pagination.appendChild(document.createTextNode(' | ')); // Add separator
+                    }
                 }
+            } else {
+                console.error('Error loading books:', xhr.statusText);
             }
         };
         xhr.send();

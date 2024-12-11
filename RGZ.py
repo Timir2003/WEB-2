@@ -94,6 +94,9 @@ def get_books():
     genre = request.args.get('genre', '')
     pages_from = request.args.get('pages_from', '')
     pages_to = request.args.get('pages_to', '')
+    page = int(request.args.get('page', 1))  # Текущая страница
+    limit = 10  # Количество книг на странице
+    offset = (page - 1) * limit  # Смещение
 
     conn, cur = db_connect()
     if conn is None or cur is None:
@@ -123,7 +126,20 @@ def get_books():
     if conditions:
         query += " AND " + " AND ".join(conditions)
 
+    # Получаем общее количество книг
+    count_query = "SELECT COUNT(*) FROM books WHERE TRUE"
+    if conditions:
+        count_query += " AND " + " AND ".join(conditions)
+
     try:
+        cur.execute(count_query, params)
+        total_count = cur.fetchone()[0]  # Общее количество книг
+
+        # Получаем книги с пагинацией
+        query += f" LIMIT %s OFFSET %s"
+        params.append(limit)
+        params.append(offset)
+
         cur.execute(query, params)
         books = cur.fetchall()
         
@@ -135,7 +151,8 @@ def get_books():
 
     db_close(conn, cur)
 
-    return jsonify({"books": books_list})
+    total_pages = (total_count + limit - 1) // limit  # Общее количество страниц
+    return jsonify({"books": books_list, "total_pages": total_pages})
 
 @RGZ.route('/api/register', methods=['POST'])
 def register():
