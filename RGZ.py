@@ -222,17 +222,21 @@ def manage_books():
         return render_template('/RGZ/admin/manage_books.html', authors=[], genres=[], page_count=[], books=[], error="Ошибка подключения к базе данных")
 
     try:
+        # Получаем уникальных авторов из базы данных
         cur.execute("SELECT DISTINCT author FROM books")
         authors = [row['author'] for row in cur.fetchall()]
 
+        # Получаем уникальные жанры из базы данных
         cur.execute("SELECT DISTINCT genre FROM books")
         genres = [row['genre'] for row in cur.fetchall()]
 
+        # Получаем уникальные количества страниц из базы данных
         cur.execute("SELECT DISTINCT page_count FROM books")
         page_count = [row['page_count'] for row in cur.fetchall()]
 
+        # Получаем все книги
         cur.execute("SELECT * FROM books;")
-        books = cur.fetchall()
+        books = cur.fetchall()  # Получаем список книг
 
     except Exception as e:
         db_close(conn, cur)
@@ -320,13 +324,16 @@ def get_admin_books():
     try:
         cur.execute(query, params)
         books = cur.fetchall()
+        
+        # Преобразование результата в список словарей
+        books_list = [dict(book) for book in books]
     except Exception as e:
         db_close(conn, cur)
-        return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
+        return jsonify({"error": f"Ошибка выполнения запроса: {str(e)}"}), 500
 
     db_close(conn, cur)
 
-    return jsonify({"books": books})
+    return jsonify({"books": books_list})
 
 @RGZ.route('/api/admin/books', methods=['POST'])
 def add_admin_book():
@@ -369,11 +376,9 @@ def add_admin_book():
 
 @RGZ.route('/api/books', methods=['POST'])
 def add_book():
-    # Проверка авторизации
-    if 'login' not in session or session['role'] != 'admin':
+    if 'login' not in session or session['login'] != ADMIN_USER:
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Получение данных из запроса
     data = request.get_json()
     title = data.get('title')
     author = data.get('author')
@@ -386,32 +391,22 @@ def add_book():
     if not all([title, author, genre, page_count, publisher, cover_image]):
         return jsonify({"error": "Заполните все поля"}), 400
 
-    # Подключение к базе данных
     conn, cur = db_connect()
     if conn is None or cur is None:
         return jsonify({"error": "Ошибка подключения к базе данных"}), 500
 
-    # Формирование SQL-запроса
-    query = """
-    INSERT INTO books (title, author, genre, page_count, publisher, cover_image)
-    VALUES (%s, %s, %s, %s, %s, %s);
-    """ if current_app.config['DB_TYPE'] == 'postgres' else """
-    INSERT INTO books (title, author, genre, page_count, publisher, cover_image)
-    VALUES (?, ?, ?, ?, ?, ?);
-    """
-
     try:
-        # Выполнение SQL-запроса
-        cur.execute(query, (title, author, genre, page_count, publisher, cover_image))
+        # Вставка новой книги в базу данных
+        cur.execute(
+            "INSERT INTO books (title, author, genre, page_count, publisher, cover_image) VALUES (%s, %s, %s, %s, %s, %s)",
+            (title, author, genre, page_count, publisher, cover_image)
+        )
         conn.commit()  # Фиксация изменений
     except Exception as e:
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
 
-    # Закрытие соединения с базой данных
     db_close(conn, cur)
-
-    return jsonify({"message": "Книга добавлена успешно!"}), 201
 
     return jsonify({"message": "Книга добавлена успешно!"}), 201
 
