@@ -111,11 +111,11 @@ def get_books():
         conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
         params.append(genre)
 
-    if pages_from:
+    if pages_from.isdigit():  # Проверка, что pages_from является числом
         conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
         params.append(int(pages_from))
 
-    if pages_to:
+    if pages_to.isdigit():  # Проверка, что pages_to является числом
         conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
         params.append(int(pages_to))
 
@@ -148,11 +148,11 @@ def get_books():
         total_conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
         total_params.append(genre)
 
-    if pages_from:
+    if pages_from.isdigit():  # Проверка, что pages_from является числом
         total_conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
         total_params.append(int(pages_from))
 
-    if pages_to:
+    if pages_to.isdigit():  # Проверка, что pages_to является числом
         total_conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
         total_params.append(int(pages_to))
 
@@ -165,7 +165,9 @@ def get_books():
     except Exception as e:
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
-    total_pages = (total_books + per_page - 1)
+
+    total_pages = (total_books + per_page - 1) // per_page
+
     db_close(conn, cur)
 
     return jsonify({
@@ -390,12 +392,16 @@ def add_book():
     if conn is None or cur is None:
         return jsonify({"error": "Ошибка подключения к базе данных"}), 500
 
+    # Определение типа базы данных
+    db_type = current_app.config['DB_TYPE']
+    placeholder = '%s' if db_type == 'postgres' else '?'
+
     try:
         # Вставка новой книги в базу данных
         cur.execute(
-            """
+            f"""
             INSERT INTO books (title, author, genre, page_count, publisher, cover_image)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
             """,
             (title, author, genre, page_count, publisher, cover_image)
         )
