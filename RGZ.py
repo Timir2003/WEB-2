@@ -58,21 +58,18 @@ def reg():
 
 @RGZ.route('/RGZ/')
 def lab():
-    
     conn, cur = db_connect()
     if conn is None or cur is None:
         return render_template('/RGZ/RGZ.html', authors=[], genres=[], page_count=[])
 
     try:
-        # Получаем уникальных авторов из базы данных
+        # Получаем уникальных авторов, жанры и количество страниц из базы данных
         cur.execute("SELECT DISTINCT author FROM books")
         authors = [row['author'] for row in cur.fetchall()]
 
-        # Получаем уникальные жанры из базы данных
         cur.execute("SELECT DISTINCT genre FROM books")
         genres = [row['genre'] for row in cur.fetchall()]
 
-        # Получаем уникальные количества страниц из базы данных
         cur.execute("SELECT DISTINCT page_count FROM books")
         page_count = [row['page_count'] for row in cur.fetchall()]
 
@@ -81,12 +78,11 @@ def lab():
         return render_template('/RGZ/RGZ.html', authors=[], genres=[], page_count=[], error=str(e))
 
     db_close(conn, cur)
-
     return render_template('/RGZ/RGZ.html', authors=authors, genres=genres, page_count=page_count)
 
 @RGZ.route('/api/books', methods=['GET'])
 def get_books():
-    # Проверка, авторизован ли пользователь
+    # Проверка авторизации
     if 'login' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
@@ -139,7 +135,6 @@ def get_books():
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
 
-
     # Получение общего количества книг для пагинации
     total_query = "SELECT COUNT(*) FROM books WHERE TRUE"
     total_conditions = []
@@ -164,27 +159,24 @@ def get_books():
     if total_conditions:
         total_query += " AND " + " AND ".join(total_conditions)
 
-
     try:
         cur.execute(total_query, total_params)
         total_books = cur.fetchone()['count']
     except Exception as e:
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
-    
-    total_pages = (total_books + per_page - 1) // per_page
-
+    total_pages = (total_books + per_page - 1)
     db_close(conn, cur)
 
-    return jsonify({    
-    "books": books,
-    "page": page,
-    "total_pages": total_pages,
-    "pagination": {
-        "current_page": page,
-        "total_pages": total_pages
-    }
-})
+    return jsonify({
+        "books": books,
+        "page": page,
+        "total_pages": total_pages,
+        "pagination": {
+            "current_page": page,
+            "total_pages": total_pages
+        }
+    })
 
 @RGZ.route('/api/register', methods=['POST'])
 def register():
@@ -376,9 +368,11 @@ def add_admin_book():
 
 @RGZ.route('/api/books', methods=['POST'])
 def add_book():
+    # Проверка авторизации
     if 'login' not in session or session['login'] != ADMIN_USER:
         return jsonify({"error": "Unauthorized"}), 401
 
+    # Получение данных из запроса
     data = request.get_json()
     title = data.get('title')
     author = data.get('author')
@@ -391,6 +385,7 @@ def add_book():
     if not all([title, author, genre, page_count, publisher, cover_image]):
         return jsonify({"error": "Заполните все поля"}), 400
 
+    # Подключение к базе данных
     conn, cur = db_connect()
     if conn is None or cur is None:
         return jsonify({"error": "Ошибка подключения к базе данных"}), 500
@@ -398,17 +393,26 @@ def add_book():
     try:
         # Вставка новой книги в базу данных
         cur.execute(
-            "INSERT INTO books (title, author, genre, page_count, publisher, cover_image) VALUES (%s, %s, %s, %s, %s, %s)",
+            """
+            INSERT INTO books (title, author, genre, page_count, publisher, cover_image)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
             (title, author, genre, page_count, publisher, cover_image)
         )
         conn.commit()  # Фиксация изменений
     except Exception as e:
-        db_close(conn, cur)
-        return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
+        # Обработка ошибок выполнения запроса
+        return handle_db_error(e, conn, cur)
 
+    # Закрытие соединения с базой данных
     db_close(conn, cur)
 
     return jsonify({"message": "Книга добавлена успешно!"}), 201
+
+def handle_db_error(error, conn, cur):
+    """Обработка ошибок базы данных и закрытие соединения."""
+    db_close(conn, cur)
+    return jsonify({"error": f"Ошибка выполнения запроса: {str(error)}"}), 500
 
 @RGZ.route('/RGZ/edit_book/<int:book_id>', methods=['GET', 'POST'])
 def edit_book(book_id):
