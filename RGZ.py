@@ -108,24 +108,23 @@ def get_books():
     params = []
 
     if author:
-        conditions.append("author = %s")
+        conditions.append("author = %s" if current_app.config['DB_TYPE'] == 'postgres' else "author = ?")
         params.append(author)
 
     if genre:
-        conditions.append("genre = %s")
+        conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
         params.append(genre)
 
     if pages_from:
-        conditions.append("page_count >= %s")
+        conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
         params.append(int(pages_from))
 
     if pages_to:
-        conditions.append("page_count <= %s")
+        conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
         params.append(int(pages_to))
 
-    # Формируем SQL-запрос
     query = "SELECT cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE TRUE"
-    
+   
     if conditions:
         query += " AND " + " AND ".join(conditions)
 
@@ -147,23 +146,24 @@ def get_books():
     total_params = []
 
     if author:
-        total_conditions.append("author = %s")
+        total_conditions.append("author = %s" if current_app.config['DB_TYPE'] == 'postgres' else "author = ?")
         total_params.append(author)
 
     if genre:
-        total_conditions.append("genre = %s")
+        total_conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
         total_params.append(genre)
 
     if pages_from:
-        total_conditions.append("page_count >= %s")
+        total_conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
         total_params.append(int(pages_from))
 
     if pages_to:
-        total_conditions.append("page_count <= %s")
+        total_conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
         total_params.append(int(pages_to))
 
     if total_conditions:
         total_query += " AND " + " AND ".join(total_conditions)
+
 
     try:
         cur.execute(total_query, total_params)
@@ -200,15 +200,13 @@ def register():
         return jsonify({"error": "Ошибка подключения к базе данных"}), 500
 
     try:
-        # Проверка существования пользователя
-        cur.execute("SELECT login FROM users WHERE login=%s;", (login,))
+        cur.execute("SELECT login FROM users WHERE login=%s;" if current_app.config['DB_TYPE'] == 'postgres' else "SELECT login FROM users WHERE login=?;", (login,))
         if cur.fetchone():
             return jsonify({"error": "Такой пользователь уже существует"}), 400
 
-        # Хеширование пароля
         password_hash = generate_password_hash(password)
-        cur.execute("INSERT INTO users (login, password) VALUES (%s, %s);", (login, password_hash))
-        conn.commit()  # Не забудьте зафиксировать изменения
+        cur.execute("INSERT INTO users (login, password) VALUES (%s, %s);" if current_app.config['DB_TYPE'] == 'postgres' else "INSERT INTO users (login, password) VALUES (?, ?);", (login, password_hash))
+        conn.commit()
     except Exception as e:
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {e}"}), 500
@@ -224,21 +222,17 @@ def manage_books():
         return render_template('/RGZ/admin/manage_books.html', authors=[], genres=[], page_count=[], books=[], error="Ошибка подключения к базе данных")
 
     try:
-        # Получаем уникальных авторов из базы данных
         cur.execute("SELECT DISTINCT author FROM books")
         authors = [row['author'] for row in cur.fetchall()]
 
-        # Получаем уникальные жанры из базы данных
         cur.execute("SELECT DISTINCT genre FROM books")
         genres = [row['genre'] for row in cur.fetchall()]
 
-        # Получаем уникальные количества страниц из базы данных
         cur.execute("SELECT DISTINCT page_count FROM books")
         page_count = [row['page_count'] for row in cur.fetchall()]
 
-        # Получаем все книги
         cur.execute("SELECT * FROM books;")
-        books = cur.fetchall()  # Получаем список книг
+        books = cur.fetchall()
 
     except Exception as e:
         db_close(conn, cur)
@@ -262,14 +256,12 @@ def login():
         return jsonify({"error": "Ошибка подключения к базе данных"}), 500
 
     try:
-        # Получение пользователя из базы данных
-        cur.execute("SELECT * FROM users WHERE login=%s;", (login,))
+        cur.execute("SELECT * FROM users WHERE login=%s;" if current_app.config['DB_TYPE'] == 'postgres' else "SELECT * FROM users WHERE login=?;", (login,))
         user = cur.fetchone()
 
         if not user or not check_password_hash(user['password'], password):
             return jsonify({"error": "Логин и/или пароль неверны"}), 401
 
-        # Установка сессии
         session['login'] = user['login']
         session['role'] = 'admin' if user['login'] == ADMIN_USER else 'user'
     except Exception as e:
@@ -278,7 +270,6 @@ def login():
 
     db_close(conn, cur)
 
-    # Перенаправление в зависимости от роли
     redirect_url = url_for('RGZ.manage_books') if session['role'] == 'admin' else url_for('RGZ.lab')
 
     return jsonify({"message": "Вы успешно вошли в систему!", "redirect": redirect_url}), 200
@@ -290,11 +281,9 @@ def logout():
 
 @RGZ.route('/api/admin/books', methods=['GET'])
 def get_admin_books():
-    # Проверка, авторизован ли пользователь
     if 'login' not in session or session['role'] != 'admin':
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Получение параметров фильтрации
     author = request.args.get('author', '')
     genre = request.args.get('genre', '')
     pages_from = request.args.get('pages_from', '')
@@ -304,28 +293,25 @@ def get_admin_books():
     if conn is None or cur is None:
         return jsonify({"error": "Database connection error"}), 500
 
-
-    # Подготовка условий для SQL-запроса
     conditions = []
     params = []
 
     if author:
-        conditions.append("author = %s")
+        conditions.append("author = %s" if current_app.config['DB_TYPE'] == 'postgres' else "author = ?")
         params.append(author)
 
     if genre:
-        conditions.append("genre = %s")
+        conditions.append("genre = %s" if current_app.config['DB_TYPE'] == 'postgres' else "genre = ?")
         params.append(genre)
 
     if pages_from:
-        conditions.append("page_count >= %s")
+        conditions.append("page_count >= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count >= ?")
         params.append(int(pages_from))
 
     if pages_to:
-        conditions.append("page_count <= %s")
+        conditions.append("page_count <= %s" if current_app.config['DB_TYPE'] == 'postgres' else "page_count <= ?")
         params.append(int(pages_to))
 
-    # Формируем SQL-запрос
     query = "SELECT id, cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE TRUE"
     
     if conditions:
@@ -340,17 +326,13 @@ def get_admin_books():
 
     db_close(conn, cur)
 
-    return jsonify({
-        "books": books
-    })
+    return jsonify({"books": books})
 
 @RGZ.route('/api/admin/books', methods=['POST'])
 def add_admin_book():
-    # Проверка, авторизован ли пользователь
     if 'login' not in session or session['role'] != 'admin':
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Получение данных из запроса
     data = request.get_json()
     title = data.get('title')
     author = data.get('author')
@@ -359,7 +341,6 @@ def add_admin_book():
     publisher = data.get('publisher')
     cover_image = data.get('cover_image')
 
-    # Проверка на наличие обязательных полей
     if not all([title, author, genre, pages, publisher, cover_image]):
         return jsonify({"error": "Missing fields"}), 400
 
@@ -367,12 +348,14 @@ def add_admin_book():
     if conn is None or cur is None:
         return jsonify({"error": "Database connection error"}), 500
 
-
-    # Вставка новой книги в базу данных
     query = """
     INSERT INTO books (title, author, genre, page_count, publisher, cover_image)
     VALUES (%s, %s, %s, %s, %s, %s);
+    """ if current_app.config['DB_TYPE'] == 'postgres' else """
+    INSERT INTO books (title, author, genre, page_count, publisher, cover_image)
+    VALUES (?, ?, ?, ?, ?, ?);
     """
+    
     try:
         cur.execute(query, (title, author, genre, pages, publisher, cover_image))
         conn.commit()
@@ -427,7 +410,6 @@ def edit_book(book_id):
         return "Ошибка подключения к базе данных", 500
 
     if request.method == 'POST':
-        # Получаем данные из формы
         title = request.form['title']
         author = request.form['author']
         genre = request.form['genre']
@@ -435,12 +417,15 @@ def edit_book(book_id):
         publisher = request.form['publisher']
         cover_image = request.form['cover_image']
 
-        # Обновляем данные книги в базе данных
         try:
             cur.execute("""
                 UPDATE books 
                 SET title=%s, author=%s, genre=%s, page_count=%s, publisher=%s, cover_image=%s 
                 WHERE id=%s;
+            """ if current_app.config['DB_TYPE'] == 'postgres' else """
+                UPDATE books 
+                SET title=?, author=?, genre=?, page_count=?, publisher=?, cover_image=? 
+                WHERE id=?;
             """, (title, author, genre, pages, publisher, cover_image, book_id))
             conn.commit()
         except Exception as e:
@@ -449,13 +434,11 @@ def edit_book(book_id):
 
         db_close(conn, cur)
 
-        # Перенаправляем на страницу управления книгами после успешного редактирования
         flash('Книга успешно обновлена!')
         return redirect(url_for('RGZ.manage_books'))
 
-    # Если метод GET, получаем данные книги для редактирования
     try:
-        cur.execute("SELECT id, cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE id = %s", (book_id,))
+        cur.execute("SELECT id, cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE id = %s" if current_app.config['DB_TYPE'] == 'postgres' else "SELECT id, cover_image, title, author, page_count AS pages, publisher, genre FROM books WHERE id = ?", (book_id,))
         book = cur.fetchone()
     except Exception as e:
         db_close(conn, cur)
@@ -478,7 +461,7 @@ def delete_book(book_id):
         return jsonify({"error": "Database connection error"}), 500
 
     try:
-        cur.execute("DELETE FROM books WHERE id=%s;", (book_id,))
+        cur.execute("DELETE FROM books WHERE id=%s;" if current_app.config['DB_TYPE'] == 'postgres' else "DELETE FROM books WHERE id=?;", (book_id,))
         conn.commit()
     except Exception as e:
         db_close(conn, cur)
