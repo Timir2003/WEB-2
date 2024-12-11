@@ -125,18 +125,23 @@ def get_books():
     
     if conditions:
         query += " AND " + " AND ".join(conditions)
-
     # Получаем общее количество книг
     count_query = "SELECT COUNT(*) FROM books WHERE TRUE"
     if conditions:
         count_query += " AND " + " AND ".join(conditions)
 
+    # Добавляем LIMIT и OFFSET
+    if current_app.config['DB_TYPE'] == 'postgres':
+        query += " LIMIT %s OFFSET %s"
+    else:
+        query += " LIMIT ? OFFSET ?"
+
     try:
+        # Выполнение запроса для получения общего количества книг
         cur.execute(count_query, params)
         total_count = cur.fetchone()[0]  # Общее количество книг
 
         # Получаем книги с пагинацией
-        query += f" LIMIT %s OFFSET %s"
         params.append(limit)
         params.append(offset)
 
