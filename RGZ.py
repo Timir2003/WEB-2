@@ -299,13 +299,11 @@ def get_admin_books():
         books = cur.fetchall()
         
         # Преобразование результата в список словарей
-        books_list = [dict(book) for book in books]
+        books_list = [dict(book) for book in books]  # Преобразуем каждую строку в словарь
     except Exception as e:
         db_close(conn, cur)
         return jsonify({"error": f"Ошибка выполнения запроса: {str(e)}"}), 500
     
-    
-
     db_close(conn, cur)
 
     return jsonify({"books": books_list})
