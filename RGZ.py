@@ -73,12 +73,16 @@ def lab():
         cur.execute("SELECT DISTINCT page_count FROM books")
         page_count = [row['page_count'] for row in cur.fetchall()]
 
+        # Получаем все книги
+        cur.execute("SELECT * FROM books;")
+        books = cur.fetchall()  # Получаем список книг
+
     except Exception as e:
         db_close(conn, cur)
-        return render_template('/RGZ/RGZ.html', authors=[], genres=[], page_count=[], error=str(e))
+        return render_template('/RGZ/RGZ.html', authors=[], genres=[], page_count=[], books=[], error=str(e))
 
     db_close(conn, cur)
-    return render_template('/RGZ/RGZ.html', authors=authors, genres=genres, page_count=page_count)
+    return render_template('/RGZ/RGZ.html', authors=authors, genres=genres, page_count=page_count, books=books)
 
 @RGZ.route('/api/books', methods=['GET'])
 def get_books():
