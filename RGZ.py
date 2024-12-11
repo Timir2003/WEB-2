@@ -95,7 +95,7 @@ def get_books():
     pages_from = request.args.get('pages_from', '')
     pages_to = request.args.get('pages_to', '')
     page = int(request.args.get('page', 1))  # Текущая страница
-    limit = 10  # Количество книг на странице
+    limit = 20  # Количество книг на странице
     offset = (page - 1) * limit  # Смещение
 
     conn, cur = db_connect()
