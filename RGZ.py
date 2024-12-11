@@ -372,7 +372,7 @@ def add_admin_book():
 
     return jsonify({"message": "Book added successfully"}), 201
 
-@RGZ.route('/api/books', methods=['POST'])
+@RGZ.route('/api/book', methods=['POST'])
 def add_book():
     # Проверка авторизации
     if 'login' not in session or session['login'] != ADMIN_USER:
