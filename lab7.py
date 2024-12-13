@@ -5,6 +5,7 @@ from psycopg2.extras import RealDictCursor
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from os import path
+from datetime import datetime
 
 
 lab7 = Blueprint('lab7', __name__)
@@ -14,7 +15,7 @@ def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
         conn = psycopg2.connect(dbname="WEB", 
         user="postgres", 
-        password="postgres", 
+        password="Super0925!", 
         host="127.0.0.1"
         )
         cur = conn.cursor(cursor_factory = RealDictCursor)
@@ -37,79 +38,70 @@ def db_close(conn, cur):
 def main():
     return render_template('lab7/index.html')
 
-films = [
-    {
-        "title": "The Hunger Games",
-        "title_ru": "Голодные игры",
-        "year": 2012,
-        "description": "В равном дистрикте двенадцать проживает Китнисс - сильная и решительная девушка, которая вынуждена бороться за выживание в безжалостном мире. Власть национального Капитолия контролирует каждый аспект жизни людей, а ежегодные голодные игры становятся новым орудием управления. На этот раз судьба выбирает Кит как одного из участников турнира смерти, но она не допустит, чтобы ее сестра стала жертвой системы. Вместе с добрым соседом Питом они доказывают всему миру, что любовь и сопереживание может победить самые страшные испытания. Голод, опасность и борьба за выживание - это только часть ХХI века, где каждый из нас - участник Голодных игр."
-    },
-    {
-        "title": "The Hunger Games: And the Flame will break Out",
-        "title_ru": "Голодные игры: И вспыхнет пламя",
-        "year": 2013,
-        "description": "Будущее Китнисс и Пита связано с борьбой за выживание в жестокой реальности - Голодных играх. Они победили, но новых испытаний не избежать. Возвращение в дистрикт, где их радушно встречают родные, не означает безопасности. Им предстоит противостоять Капитолию, вызвав его правители на бой. За обиду жадные богатеи приготовили для пары новую игру: сражаться до последнего в очередном турнире Голодных игр. Но теперь все правила изменились, и многое зависит от Китнисс и Пита. Что будет, если они снова победят? Какие решения им предстоит принимать в этой опасной игре? Сильная любовь и дружба будут служить им оплотом в любой битве. Готовы ли Китнисс и Пит пройти через горящий ад."
-    },
-    {
-        "title": "The Hunger Games: Mockingjay. Part I",
-        "title_ru": "Голодные игры: Сойка-пересмешница. Часть I",
-        "year": 2014,
-        "description": "В мире, где борьба за выживание идет на грани жестокости, Китнисс Эвердин и Пит Мелларк постепенно осознают ужасы, связанные с Голодными играми. Но когда восстание против Капитолия начинает набирать обороты, Кит оказывается в центре событий. Помимо обязанности защитить свою семью и друзей, ей приходится стать лицом мятежа и возглавить его. Она готова пожертвовать всем, чтобы доказать Капитолию, что он несостоятелен в своей власти. И все это происходит в Голодные игры: Сойка-пересмешница. Часть I. Битва будет ожесточенной, но Кит и Пит решены довести ее до конца и победить любой ценой. Вместе они смогут изменить ход истории, но только если будут верны своим идеалам. Присоединяйтесь к этому невероятному приключению, которое оставит след в сердцах миллионов."
-    },
-    {
-        "title": "The Hunger Games: Mockingjay. Part II",
-        "title_ru": "Голодные игры: Сойка-пересмешница. Часть II",
-        "year": 2015,
-        "description": "После атаки на тренировочный лагерь борцам Сопротивления удается спасти Пита и других трибутов. Но счастливого воссоединения друзей не получается. Обезумевший от пыток Пит нападает на Китнисс и едва не лишает её жизни. Девушка приходит в себя в лазарете с ожерельем из кровоподтеков на шее. Она не согласна с идеей отсидеться в бункере до конца войны и охвачена желанием убить президента Сноу. Китнисс яростно рвется участвовать в войне, названной 76 Голодными играми. Лучница трезво осознает: она может выиграть ожесточенную схватку между самодержавным Капитолием и истерзанными дистриктами. Но всеми силами хочет дистанцироваться от кровожадных лицемеров, которые есть как в составе действующей власти, так и в генеральном штабе Сопротивления."
-    },
-    {
-        "title": "The Maze Runner",
-        "title_ru": "Бегущий в лабиринте",
-        "year": 2014,
-        "description": "Фильм “Бегущий в лабиринте” (2014) – захватывающий постапокалиптический триллер, основанный на одноименной серии романов Джеймса Дэшнера. Молодой парень Томас оказывается в центре загадочного лабиринта вместе с другими подростками, которые, как и он, не помнят своего прошлого. Героев ждут опасные испытания и зловещие секреты, пока они пытаются найти путь на свободу. Объединяя динамичный сюжет, яркие спецэффекты и захватывающие повороты, “Бегущий в лабиринте” – это фильм, который держит в напряжении с первого до последнего кадра. Узнайте, как Томас и его друзья преодолевают преграды, разгадывают тайны и борются за свою жизнь в этом интенсивном приключении."
-    },
-]
-
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return jsonify (films)
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films;")
+    films = cur.fetchall()
+    db_close(conn, cur)
+    return jsonify(films)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    if id < 0 or id >= len(films):
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films WHERE id = %s;", (id,))
+    film = cur.fetchone()
+    db_close(conn, cur)
+    if film is None:
         abort(404)
-    return films[id]
+    return jsonify(film)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
-    if id < 0 or id >= len(films):
-        abort(404)  
-    del films[id]
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM films WHERE id = %s;", (id,))
+    db_close(conn, cur)
     return '', 204
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
-    if id < 0 or id >= len(films):
-        abort(404)  
     film = request.get_json()
-    if film['description'] == '':
-        return {'description': 'Заполните описание'}, 400
-    
+    if film is None:
+        return {'error': 'Неверный формат данных.'}, 400
     if not film.get('title_ru'):
-        film['title_ru'] = film['title']
+        return {'error': 'Русское название должно быть непустым.'}, 400
+    if not film.get('title') and not film['title_ru']:
+        return {'error': 'Название на оригинальном языке должно быть непустым, если русское название пустое.'}, 400
+    current_year = datetime.now().year
+    if not (1895 <= film.get('year', 0) <= current_year):
+        return {'error': f'Год должен быть от 1895 до {current_year}.'}, 400
+    if not film.get('description') or len(film['description']) > 2000:
+        return {'error': 'Описание должно быть непустым и не более 2000 символов.'}, 400
 
-    films[id] = film
-    return films[id]
+    conn, cur = db_connect()
+    cur.execute("""UPDATE films SET title = %s, title_ru = %s, year = %s, description = %s WHERE id = %s;""", (film['title'], film['title_ru'], film['year'], film['description'], id))
+    db_close(conn, cur)
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json() 
-    if not film.get('description'): 
-        return {'description': 'Заполните описание'}, 400
-    
-    if not film.get('title_ru'):
-        film['title_ru'] = film['title']
 
-    films.append(film)  
-    return {'id': len(films) - 1}, 201
+    if film is None:
+        return {'error': 'Неверный формат данных.'}, 400
+    if not film.get('title_ru'):
+        return {'error': 'Русское название должно быть непустым.'}, 400
+    if not film.get('title') and not film['title_ru']:
+        return {'error': 'Название на оригинальном языке должно быть непустым, если русское название пустое.'}, 400
+    current_year = datetime.now ().year
+    if not (1895 <= film.get('year', 0) <= current_year):
+        return {'error': f'Год должен быть от 1895 до {current_year}.'}, 400
+    if not film.get('description') or len(film['description']) > 2000:
+        return {'error': 'Описание должно быть непустым и не более 2000 символов.'}, 400
+
+    conn, cur = db_connect()
+    cur.execute("""INSERT INTO films (title, title_ru, year, description) VALUES (%s, %s, %s, %s) RETURNING id;""", (film['title'], film['title_ru'], film['year'], film['description']))
+    film_id = cur.fetchone()['id']
+    db_close(conn, cur)
+
+    return jsonify({'id': film_id}), 201
