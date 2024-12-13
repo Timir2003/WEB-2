@@ -20,10 +20,14 @@ function fillFilmList() {
 
             let editButton = document.createElement('button');
             editButton.innerText = 'Редактировать';
-
+            // Здесь можно добавить обработчик для редактирования фильма
 
             let delButton = document.createElement('button');
             delButton.innerText = 'Удалить';
+            // Добавляем обработчик события для кнопки удаления
+            delButton.onclick = function() {
+                deleteFilm(i, films[i].title);
+            };
 
             tdActions.append(editButton);
             tdActions.append(delButton);
@@ -36,5 +40,58 @@ function fillFilmList() {
             tbody.append(tr);
         }
     })
+}
+function deleteFilm(id, title) {
+    if(! confirm(`Вы точно хотите удалить фильм "${title}"?`))
+        return;
+    fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})
+        .then(function () {
+            fillFilmList();
+        })
+}
 
+
+function showModal() {
+    document.querySelector('div.modal').style.display = 'block';
+}
+
+function hideModal() {
+    document.querySelector('div.modal').style.display = 'none';
+}
+
+function cancel() {
+    hideModal();
+}
+
+function addFilm() {
+    document.getElementById('id').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('title_ru').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('description').value = '';
+    showModal();
+}
+function sendFilm() {
+    const film = {
+        title: document.getElementById('title').value,
+        title_ru: document.getElementById('title_ru').value,
+        year: document.getElementById('year').value,
+        description: document.getElementById('description').value 
+    }
+
+    const url = `/lab7/rest-api/films/`;
+    const method = 'POST';
+
+    fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(film)
+    })
+    .then(function() {
+        fillFilmList();
+        hideModal();
+    })
+    .catch(function (error) {
+        console.error('Ошибка при добавлении фильма:', error);
+    });
 }
