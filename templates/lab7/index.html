@@ -6,9 +6,9 @@
     <script src="{{ url_for('static', filename='lab7/main.js') }}"></script>
     <style>
         .modal {
-            display: none; /* Скрыто по умолчанию */
-            z-index: 100; /* Поверх других элементов */
-            box-shadow: 3px 3px 5px black; /* Тень */
+            display: none;
+            z-index: 100;
+            box-shadow: 3px 3px 5px black;
             background: white;
             width: 500px;
             left: 50%;
@@ -19,35 +19,36 @@
         }
         .error-message {
             color: red;
+            font-size: 14px;
         }
         table {
             width: 100%;
-            border-collapse: collapse; /* Убирает двойные границы */
+            border-collapse: collapse;
             margin-top: 20px;
         }
         th, td {
-            border: 1px solid #ddd; /* Граница ячеек */
-            padding: 8px; /* Отступы внутри ячеек */
-            text-align: left; /* Выравнивание текста */
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
         th {
-            background-color: #f2f2f2; /* Цвет фона заголовков */
-            color: #333; /* Цвет текста заголовков */
+            background-color: #f2f2f2;
+            color: #333;
         }
         tr:hover {
-            background-color: #f5f5f5; /* Цвет строки при наведении */
+            background-color: #f5f5f5;
         }
         button {
-            margin-top: 20px; /* Отступ сверху для кнопки */
-            padding: 10px 15px; /* Отступы внутри кнопки */
-            background-color: #4CAF50; /* Цвет фона кнопки */
-            color: white; /* Цвет текста кнопки */
-            border: none; /* Убираем границу */
-            border-radius: 5px; /* Скругление углов */
-            cursor: pointer; /* Курсор при наведении */
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
         button:hover {
-            background-color: #45a049; /* Цвет фона кнопки при наведении */
+            background-color: #45a049; 
         }
     </style>
 {% endblock %}
