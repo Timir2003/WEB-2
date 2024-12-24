@@ -2,38 +2,20 @@
 {% block lab %}Лабораторная работа 8{% endblock %}
 {% block main %}
 
-<h1>Статьи</h1>
-
-{% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-        <ul>
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
-
-{% if articles %}
+    <h1>Список статей</h1>
     <ul>
         {% for article in articles %}
             <li>
                 <h2>{{ article.title }}</h2>
                 <p>{{ article.content }}</p>
-                {% if current_user.is_authenticated and article.user_id == current_user.id %}
-                    <form action="{{ url_for('lab8.delete_article', article_id=article.id) }}" method="POST" style="display:inline;">
-                        <button type="submit">Удалить</button>
-                    </form>
-                    <a href="{{ url_for('lab8.edit_article', article_id=article.id) }}">Редактировать</a>
-                {% endif %}
+                <form action="{{ url_for('lab8.delete_article', article_id=article.id) }}" method="POST" style="display:inline;">
+                    <button type="submit">Удалить</button>
+                </form>
+                <a href="{{ url_for('lab8.edit_article', article_id=article.id) }}">Редактировать</a>
             </li>
         {% endfor %}
     </ul>
-    {% if current_user.is_authenticated %}
-        <a href="{{ url_for('lab8.create_article') }}">Создать новую статью</a>
-    {% endif %}
-{% else %}
-    <p>У вас нет ни одной статьи.</p>
-{% endif %}
+    <a href="{{ url_for('lab8.create_article') }}">Создать новую статью</a>
+
 
 {% endblock %}
