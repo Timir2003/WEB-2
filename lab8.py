@@ -31,7 +31,7 @@ def register():
         return render_template('lab8/register.html', error='Пароль не должен быть пустым')
 
 
-    login_exists = Users.filter_by(login = login_form).first ()
+    login_exists = Users.query.filter_by(login = login_form).first ()
     if login_exists:
         return render_template('lab8/register.html', error = 'Такой пользователь уже существует')
     
