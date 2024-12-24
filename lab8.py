@@ -101,7 +101,7 @@ def create_article():
 def edit_article(article_id):
     article = Articles.query.get_or_404(article_id)
 
-    if article.user_id != current_user.id:
+    if article.login_id != current_user.id:
         flash('У вас нет прав для редактирования этой статьи', 'error')
         return redirect('/lab8/list')
 
@@ -126,7 +126,7 @@ def edit_article(article_id):
 def delete_article(article_id):
     article = Articles.query.get_or_404(article_id)
 
-    if article.user_id != current_user.id:
+    if article.login_id != current_user.id:
         flash('У вас нет прав для удаления этой статьи', 'error')
         return redirect('/lab8/list')
 
