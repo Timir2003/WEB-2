@@ -84,13 +84,13 @@ def create_article():
         return render_template('lab8/create.html')
 
     title = request.form.get('title')
-    content = request.form.get('content')
+    article_text = request.form.get('content')
 
-    if not title or not content:
+    if not title or not article_text:
         flash('Название и содержание статьи не должны быть пустыми', 'error')
         return redirect(url_for('lab8.create'))
 
-    new_article = Articles(title=title, content=content, user_id=current_user.id)
+    new_article = Articles(title=title, article_text=article_text, user_id=current_user.id)
     db.session.add(new_article)
     db.session.commit()
     flash('Статья успешно создана!', 'success')
