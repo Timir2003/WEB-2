@@ -20,8 +20,8 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'совершенно с
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 if app.config['DB_TYPE'] == 'postgres':
-        db_name = "WEB" 
-        db_user = 'postgres' 
+        db_name = "Timur" 
+        db_user = 'Timur' 
         db_password = 'Super0925!'
         host_ip = '127.0.0.1'
         host_port = 5432
