@@ -7,7 +7,7 @@
         {% for article in articles %}
             <li>
                 <h2>{{ article.title }}</h2>
-                <p>{{ article.content }}</p>
+                <p>{{ article.article_text }}</p>
                 <form action="{{ url_for('lab8.delete_article', article_id=article.id) }}" method="POST" style="display:inline;">
                     <button type="submit">Удалить</button>
                 </form>
