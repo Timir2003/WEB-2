@@ -88,7 +88,7 @@ def create_article():
 
     if not title or not article_text:
         flash('Название и содержание статьи не должны быть пустыми', 'error')
-        return redirect(url_for('lab8.create'))
+        return redirect(url_for('lab8.list_articles'))
 
     new_article = Articles(title=title, article_text=article_text, login_id=current_user.id)
     db.session.add(new_article)
@@ -109,14 +109,14 @@ def edit_article(article_id):
         return render_template('lab8/edit_article.html', article=article)
 
     title = request.form.get('title')
-    content = request.form.get('article_text')
+    article_text = request.form.get('article_text')
 
-    if not title or not content:
+    if not title or not article_text:
         flash('Название и содержание статьи не должны быть пустыми', 'error')
         return redirect(url_for('lab8.edit_article', article_id=article_id))
 
     article.title = title
-    article.content = content
+    article.article_text = article_text
     db.session.commit()
     flash('Статья успешно обновлена!', 'success')
     return redirect('/lab8/list')
