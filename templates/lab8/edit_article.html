@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block lab %}Лабораторная работа 8{% endblock %}
+{% block main %}
+
+<h1>Редактировать статью</h1>
+
+<form method="POST">
+    <input type="text" name="title" value="{{ article.title }}" required>
+    <textarea name="content" required>{{ article.content }}</textarea>
+    <button type="submit">Сохранить изменения</button>
+</form>
+
+<a href="/lab8/list">Назад к списку статей</a>
+
+{% endblock %}

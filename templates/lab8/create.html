@@ -8,28 +8,8 @@
     {% endif %}
 
     <form method="post">
-        <div>
-            <label>Название статьи: <input type="text" maxlength="50" name="title"></label>
-        </div>
-
-        <div>
-            <textarea name="article_text"></textarea>
-        </div>
-        
-        <div>
-            <label>
-                <input type="checkbox" name="is_favorite"> Сделать любимой
-            </label>
-        </div>
-
-        <div>
-            <label>
-                <input type="checkbox" id="is_public" name="is_public">Сделать статью публичной
-            </label>
-        </div>
-        
-        <div>
-            <button type="submit">Готово</button>
-        </div>
+        <input type="text" name="title" placeholder="Название статьи" required>
+        <textarea name="content" placeholder="Содержание статьи" required></textarea>
+        <button type="submit">Создать</button>
     </form>
 {% endblock %}

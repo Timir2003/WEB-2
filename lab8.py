@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, flash, current_app
+from flask import Blueprint, render_template, request, redirect, session, flash, current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import Users, Articles
@@ -20,6 +20,7 @@ def login():
     
     login_form = request.form.get('login')
     password_form = request.form.get('password')
+    remember = request.form.get('remember')
 
     if not login_form:
         return render_template('lab8/login.html', error='Имя пользователя не должно быть пустым')
@@ -31,11 +32,10 @@ def login():
 
     if user:
         if check_password_hash(user.password, password_form):
-            login_user(user, remember = False)
+            login_user(user, remember = remember)
             return redirect('/lab8/')
         
     return render_template('/lab8/login.html', error = 'Ошибка входа: логин и/или пароль неверный')
-
 
 @lab8.route('/lab8/register/', methods=['GET', 'POST'])
 def register():
@@ -52,7 +52,7 @@ def register():
         return render_template('lab8/register.html', error='Пароль не должен быть пустым')
 
 
-    login_exists = Users.query.filter_by(login = login_form).first ()
+    login_exists = Users.query.filter_by(login = login_form).first()
     if login_exists:
         return render_template('lab8/register.html', error = 'Такой пользователь уже существует')
     
@@ -60,6 +60,8 @@ def register():
     new_user =  Users(login = login_form, password = password_hash)
     db.session.add(new_user)
     db.session.commit()
+    login_user(new_user, remember=False)
+    flash('Вы успешно зарегистрированы и вошли в систему!', 'success')
     return redirect('/lab8/')
 
 @lab8.route('/lab8/logout')
@@ -72,8 +74,63 @@ def logout():
 @lab8.route('/lab8/list', methods=['GET'])
 @login_required
 def list_articles():
-    return render_template('lab8/articles.html')
+    articles = Articles.query.all()
+    return render_template('lab8/articles.html', articles=articles)
 
-@lab8.route('/lab8/create', methods=['GET', 'POST'])
-def create():
-    return render_template('lab8/create.html')
+@lab8.route('/lab8/articles/create', methods=['GET', 'POST'])
+@login_required
+def create_article():
+    if request.method == 'GET':
+        return render_template('lab8/create.html')
+
+    title = request.form.get('title')
+    content = request.form.get('content')
+
+    if not title or not content:
+        flash('Название и содержание статьи не должны быть пустыми', 'error')
+        return redirect(url_for('lab8.create'))
+
+    new_article = Articles(title=title, content=content, user_id=current_user.id)
+    db.session.add(new_article)
+    db.session.commit()
+    flash('Статья успешно создана!', 'success')
+    return redirect('/lab8/list')
+
+@lab8.route('/lab8/articles/edit/<int:article_id>', methods=['GET', 'POST'])
+@login_required
+def edit_article(article_id):
+    article = Articles.query.get_or_404(article_id)
+
+    if article.user_id != current_user.id:
+        flash('У вас нет прав для редактирования этой статьи', 'error')
+        return redirect('/lab8/list')
+
+    if request.method == 'GET':
+        return render_template('lab8/edit_article.html', article=article)
+
+    title = request.form.get('title')
+    content = request.form.get('content')
+
+    if not title or not content:
+        flash('Название и содержание статьи не должны быть пустыми', 'error')
+        return redirect(url_for('lab8.edit_article', article_id=article_id))
+
+    article.title = title
+    article.content = content
+    db.session.commit()
+    flash('Статья успешно обновлена!', 'success')
+    return redirect('/lab8/list')
+
+@lab8.route('/lab8/articles/delete/<int:article_id>', methods=['POST'])
+@login_required
+def delete_article(article_id):
+    article = Articles.query.get_or_404(article_id)
+
+    if article.user_id != current_user.id:
+        flash('У вас нет прав для удаления этой статьи', 'error')
+        return redirect('/lab8/list')
+
+    db.session.delete(article)
+    db.session.commit()
+    flash('Статья успешно удалена!', 'success')
+    return redirect('/lab8/list')
