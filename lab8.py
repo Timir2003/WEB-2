@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, session, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import Users, Articles
-from flask_login import login_user, login_required, current_user
+from flask_login import login_user, login_required, current_user, logout_user
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -62,6 +62,12 @@ def register():
     db.session.commit()
     return redirect('/lab8/')
 
+@lab8.route('/lab8/logout')
+@login_required
+def logout():
+    logout_user()
+    session.pop('login', None)
+    return redirect('/lab8/')
 
 @lab8.route('/lab8/list', methods=['GET'])
 @login_required
