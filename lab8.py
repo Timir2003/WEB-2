@@ -90,7 +90,7 @@ def create_article():
         flash('Название и содержание статьи не должны быть пустыми', 'error')
         return redirect(url_for('lab8.create'))
 
-    new_article = Articles(title=title, article_text=article_text, login_id=current_user.id)
+    new_article = Articles(title=title, article_text=article_text, user_id=current_user.id)
     db.session.add(new_article)
     db.session.commit()
     flash('Статья успешно создана!', 'success')
@@ -101,7 +101,7 @@ def create_article():
 def edit_article(article_id):
     article = Articles.query.get_or_404(article_id)
 
-    if article.login_id != current_user.id:
+    if article.user_id != current_user.id:
         flash('У вас нет прав для редактирования этой статьи', 'error')
         return redirect('/lab8/list')
 
@@ -126,7 +126,7 @@ def edit_article(article_id):
 def delete_article(article_id):
     article = Articles.query.get_or_404(article_id)
 
-    if article.login_id != current_user.id:
+    if article.user_id != current_user.id:
         flash('У вас нет прав для удаления этой статьи', 'error')
         return redirect('/lab8/list')
 
