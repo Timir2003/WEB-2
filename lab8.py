@@ -63,9 +63,9 @@ def register():
     return redirect('/lab8/')
 
 
-@lab8.route('/lab8/articles', methods=['GET'])
+@lab8.route('/lab8/list', methods=['GET'])
 @login_required
-def articles():
+def list_articles():
     return render_template('lab8/articles.html')
 
 @lab8.route('/lab8/create', methods=['GET', 'POST'])
