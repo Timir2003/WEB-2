@@ -5,19 +5,24 @@
     <h1>Статьи</h1>
 
     {% if has_articles %}
-        <ul>
-            {% for article in articles %}
-                <li>
-                    <h2>{{ article.title }}</h2>
-                    <p>{{ article.content }}</p>
-                    <form action="{{ url_for('lab8.delete_article', article_id=article.id) }}" method="POST" style="display:inline;">
-                        <button type="submit">Удалить</button>
-                    </form>
-                    <a href="{{ url_for('lab8.edit_article', article_id=article.id) }}">Редактировать</a>
-                </li>
-            {% endfor %}
-        </ul>
-        <a href="{{ url_for('lab8.create_article') }}">Создать новую статью</a>
+    <form method="GET" action="{{ url_for('lab8.list_articles') }}">
+        <button type="submit" name="filter" value="favorites">Показать любимые статьи</button>
+    </form>
+        {% for article in articles %}
+            <h2>{{ article['title'] }}</h2>
+            <blockquote>{{ article['article_text'] }}</blockquote>
+
+            <form action="{{ url_for('lab8.edit_article', article_id=article['id']) }}">
+                <button type="submit">Редактировать</button>
+            </form>
+            <form action="{{ url_for('lab8.delete_article', article_id=article['id']) }}" method="POST" style="display:inline;">
+                <button type="submit">Удалить</button>
+            </form>
+
+        {% endfor %}
+        
+
+
     {% else %}
         <p>У вас нет ни одной статьи.</p>
     {% endif %}
