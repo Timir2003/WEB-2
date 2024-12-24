@@ -49,8 +49,8 @@
     <div class="container">
     <div class="content">
       <p>Добро пожаловать в базу знаний!</p>
-    {% if login %}
-      <p>{{ login }}!</p>
+    {% if current_user.is_authenticated %}
+      <p>{{ current_user.login }}!</p>
       <a href="/lab8/logout"><button>Выйти</button></a>
       <a href="/lab8/users"><button>Список зарегистрированных пользователей</button></a>
     {% else %}
