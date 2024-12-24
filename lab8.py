@@ -85,12 +85,13 @@ def create_article():
 
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = request.form.get('is_public')
 
     if not title or not article_text:
         flash('Название и содержание статьи не должны быть пустыми', 'error')
         return redirect(url_for('lab8.list_articles'))
 
-    new_article = Articles(title=title, article_text=article_text, login_id=current_user.id)
+    new_article = Articles(title=title, article_text=article_text,is_public=is_public, login_id=current_user.id)
     db.session.add(new_article)
     db.session.commit()
     flash('Статья успешно создана!', 'success')
@@ -110,6 +111,7 @@ def edit_article(article_id):
 
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = request.form.get('is_public')
 
     if not title or not article_text:
         flash('Название и содержание статьи не должны быть пустыми', 'error')
@@ -117,6 +119,7 @@ def edit_article(article_id):
 
     article.title = title
     article.article_text = article_text
+    article.is_public = True if is_public == 'on' else False
     db.session.commit()
     flash('Статья успешно обновлена!', 'success')
     return redirect('/lab8/list')
@@ -134,3 +137,23 @@ def delete_article(article_id):
     db.session.commit()
     flash('Статья успешно удалена!', 'success')
     return redirect('/lab8/list')
+
+
+@lab8.route('/lab8/public_articles', methods=['GET'])
+def list_public_articles():
+    articles = Articles.query.filter_by(is_public=True).all()
+    return render_template('lab8/public_articles.html', articles=articles) 
+
+@lab8.route('/lab8/articles/search', methods=['GET'])
+def search_articles():
+    query = request.args.get('q')
+    if query:
+ 
+        articles = Articles.query.filter(
+            (Articles.title.ilike(f'%{query}%')) | 
+            (Articles.article_text.ilike(f'%{query}%'))
+        ).all()
+    else:
+        articles = []
+
+    return render_template('lab8/search_results.html', articles=articles)

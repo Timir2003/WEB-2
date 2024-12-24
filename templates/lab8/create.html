@@ -7,9 +7,16 @@
         <div style="color: red;">{{ error }}</div>
     {% endif %}
 
-    <form method="post">
-        <input type="text" name="title" placeholder="Название статьи" required>
-        <textarea name="article_text" placeholder="Содержание статьи" required></textarea>
-        <button type="submit">Создать</button>
+    <form method="POST">
+        <label for="title">Название статьи:</label>
+        <input type="text" id="title" name="title" required>
+        
+        <label for="article_text">Содержание статьи:</label>
+        <textarea id="article_text" name="article_text" required></textarea>
+        
+        <label for="is_public">Публичная статья:</label>
+        <input type="checkbox" id="is_public" name="is_public">
+        
+        <button type="submit">Создать статью</button>
     </form>
 {% endblock %}
