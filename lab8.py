@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, session, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import Users, Articles
+from flask_login import login_user, login_required, current_user
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -14,7 +15,27 @@ def lab():
 
 @lab8.route('/lab8/login', methods=['GET', 'POST'])
 def login():
-    return render_template('lab8/login.html')
+    if request.method == 'GET':
+        return render_template('lab8/login.html')
+    
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
+
+    if not login_form:
+        return render_template('lab8/login.html', error='Имя пользователя не должно быть пустым')
+    
+    if not password_form:
+        return render_template('lab8/login.html', error='Пароль не должен быть пустым')
+
+    user = Users.query.filter_by(login = login_form).first()
+
+    if user:
+        if check_password_hash(user.password, password_form):
+            login_user(user, remember = False)
+            return redirect('/lab8/')
+        
+    return render_template('/lab8/login.html', error = 'Ошибка входа: логин и/или пароль неверный')
+
 
 @lab8.route('/lab8/register/', methods=['GET', 'POST'])
 def register():
@@ -43,6 +64,7 @@ def register():
 
 
 @lab8.route('/lab8/articles', methods=['GET'])
+@login_required
 def articles():
     return render_template('lab8/articles.html')
 
