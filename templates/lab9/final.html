@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block lab %}Лабораторная работа 9{% endblock %}
+{% block lab %}Поздравление{% endblock %}
 {% block main %}
 <style>
     body {
@@ -50,11 +50,8 @@
     .snowflake:nth-child(9) { left: 90%; animation-duration: 5.5s; animation-delay: 0.8s; }
     .snowflake:nth-child(10) { left: 95%; animation-duration: 4s; animation-delay: 1.7s; }
     </style>
-    <h1>Введите ваше имя</h1>
-    <form method="POST">
-        <input type="text" name="name" required placeholder="Ваше имя">
-        <button type="submit">Далее</button>
-    </form>
+    <h1>{{ message }}</h1>
+    <img src="{{ url_for('static', filename=image) }}" alt="Подарок" style="max-width: 300px; margin-top: 20px;">
     <div class="snowflakes" aria-hidden="true">
         <div class="snowflake">❄</div>
         <div class="snowflake">❄</div>
