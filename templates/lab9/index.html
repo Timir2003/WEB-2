@@ -55,6 +55,9 @@
         <input type="text" name="name" required placeholder="Ваше имя">
         <button type="submit">Далее</button>
     </form>
+    <form method="POST" action="{{ url_for('reset') }}">
+        <button type="submit">Сбросить данные</button>
+    </form>
     <div class="snowflakes" aria-hidden="true">
         <div class="snowflake">❄</div>
         <div class="snowflake">❄</div>

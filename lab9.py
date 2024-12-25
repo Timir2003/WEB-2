@@ -8,9 +8,11 @@ lab9 = Blueprint('lab9', __name__)
 
 @lab9.route('/lab9/', methods=['GET', 'POST'])
 def index():
+    if 'name' in session:
+        return redirect(url_for('final'))
     if request.method == 'POST':
         session['name'] = request.form['name']
-        return redirect(url_for('lab9.age'))
+        return redirect(url_for('age'))
     return render_template('lab9/index.html')
 
 @lab9.route('/lab9/age', methods=['GET', 'POST'])
@@ -78,3 +80,8 @@ def final():
             image = 'beautiful.jpg'  # Путь к картинке с красивым
 
     return render_template('lab9/final.html', message=message, image=image)
+
+@lab9.route('/lab9/reset', methods=['POST'])
+def reset():
+    session.clear()
+    return redirect(url_for('index')) 
